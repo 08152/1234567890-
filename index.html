@@ -1,434 +1,567 @@
 <!DOCTYPE html>
 <html lang="de">
-<head>
-  <meta charset="UTF-8">
 
-  <meta
+<head>
+
+<meta charset="UTF-8">
+
+<meta
     name="viewport"
     content="width=device-width, initial-scale=1.0"
-  >
+>
 
-  <title>Bild → ChatGPT Link</title>
+<title>Bild → Link</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+<style>
 
-    body {
-      margin: 0;
-      min-height: 100vh;
+* {
+    box-sizing: border-box;
+}
 
-      display: flex;
-      align-items: center;
-      justify-content: center;
+body {
 
-      padding: 20px;
+    margin: 0;
 
-      font-family: Arial, sans-serif;
+    min-height: 100vh;
 
-      background: #101114;
-      color: white;
-    }
+    display: flex;
 
-    .container {
-      width: 100%;
-      max-width: 650px;
+    align-items: center;
 
-      background: #1a1c21;
+    justify-content: center;
 
-      border: 1px solid #30343c;
+    padding: 20px;
 
-      border-radius: 20px;
+    font-family:
+        Arial,
+        sans-serif;
 
-      padding: 30px;
+    background: #101114;
 
-      box-shadow:
-        0 20px 60px rgba(0,0,0,.4);
-    }
-
-    h1 {
-      margin-top: 0;
-    }
-
-    .description {
-      color: #aaa;
-      line-height: 1.5;
-    }
-
-    .dropzone {
-      margin-top: 25px;
-
-      border: 2px dashed #555;
-
-      border-radius: 16px;
-
-      padding: 45px 20px;
-
-      text-align: center;
-
-      cursor: pointer;
-
-      transition: .2s;
-    }
-
-    .dropzone:hover,
-    .dropzone.dragging {
-      border-color: white;
-      background: #24272e;
-    }
-
-    input {
-      display: none;
-    }
-
-    #preview {
-      display: none;
-
-      width: 100%;
-      max-height: 350px;
-
-      object-fit: contain;
-
-      margin-top: 20px;
-
-      border-radius: 12px;
-    }
-
-    button {
-      width: 100%;
-
-      margin-top: 15px;
-
-      padding: 14px;
-
-      border: none;
-
-      border-radius: 12px;
-
-      background: white;
-      color: black;
-
-      font-size: 16px;
-      font-weight: bold;
-
-      cursor: pointer;
-    }
-
-    button:disabled {
-      opacity: .4;
-      cursor: not-allowed;
-    }
-
-    #status {
-      margin-top: 15px;
-      color: #aaa;
-    }
-
-    #result {
-      display: none;
-
-      margin-top: 20px;
-
-      padding: 18px;
-
-      background: #111318;
-
-      border-radius: 12px;
-    }
-
-    #url {
-      margin-top: 10px;
-
-      color: #8ecbff;
-
-      word-break: break-all;
-    }
-
-    .small {
-      color: #888;
-
-      font-size: 13px;
-
-      line-height: 1.5;
-
-      margin-top: 15px;
-    }
-  </style>
-</head>
-
-<body>
-
-<div class="container">
-
-  <h1>🖼️ Bild → ChatGPT-Link</h1>
-
-  <p class="description">
-    Lade ein Bild hoch. Die Webseite erstellt einen
-    öffentlich erreichbaren Link zu deinem Bild.
-  </p>
-
-  <label
-    class="dropzone"
-    id="dropzone"
-  >
-    <strong>
-      Bild hier hineinziehen
-    </strong>
-
-    <br>
-
-    oder klicken, um ein Bild auszuwählen
-
-    <input
-      type="file"
-      id="file"
-      accept="image/*"
-    >
-  </label>
-
-  <img
-    id="preview"
-    alt="Bildvorschau"
-  >
-
-  <button
-    id="upload"
-    disabled
-  >
-    Bild hochladen
-  </button>
-
-  <div id="status"></div>
-
-  <div id="result">
-
-    <strong>
-      Öffentlicher Bild-Link:
-    </strong>
-
-    <div id="url"></div>
-
-    <button id="copy">
-      Link kopieren
-    </button>
-
-    <p class="small">
-      Der Link muss öffentlich erreichbar sein.
-      Wenn du ihn in ChatGPT einfügst, kann ChatGPT
-      das Bild über diesen Link abrufen, sofern der
-      verwendete ChatGPT-Zugang das Öffnen solcher
-      Links unterstützt.
-    </p>
-
-  </div>
-
-</div>
-
-<script>
-const fileInput =
-  document.getElementById("file");
-
-const dropzone =
-  document.getElementById("dropzone");
-
-const preview =
-  document.getElementById("preview");
-
-const uploadButton =
-  document.getElementById("upload");
-
-const status =
-  document.getElementById("status");
-
-const result =
-  document.getElementById("result");
-
-const urlElement =
-  document.getElementById("url");
-
-const copyButton =
-  document.getElementById("copy");
-
-let selectedFile = null;
-
-
-/* Datei auswählen */
-
-fileInput.addEventListener(
-  "change",
-  () => {
-
-    const file =
-      fileInput.files[0];
-
-    selectFile(file);
-  }
-);
-
-
-/* Datei verarbeiten */
-
-function selectFile(file) {
-
-  if (!file) return;
-
-  if (!file.type.startsWith("image/")) {
-
-    status.textContent =
-      "Bitte ein Bild auswählen.";
-
-    return;
-  }
-
-  selectedFile = file;
-
-  uploadButton.disabled = false;
-
-  status.textContent =
-    "Ausgewählt: " + file.name;
-
-  result.style.display = "none";
-
-  preview.src =
-    URL.createObjectURL(file);
-
-  preview.style.display = "block";
+    color: white;
 }
 
 
-/* Drag & Drop */
+.container {
 
-dropzone.addEventListener(
-  "dragover",
-  event => {
+    width: 100%;
 
-    event.preventDefault();
+    max-width: 650px;
 
-    dropzone.classList.add(
-      "dragging"
-    );
-  }
+    background: #1b1d22;
+
+    padding: 30px;
+
+    border-radius: 20px;
+}
+
+
+h1 {
+
+    margin-top: 0;
+
+}
+
+
+.drop {
+
+    display: block;
+
+    margin-top: 25px;
+
+    padding: 50px 20px;
+
+    text-align: center;
+
+    border: 2px dashed #555;
+
+    border-radius: 15px;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+
+}
+
+
+.drop:hover {
+
+    border-color: white;
+
+    background: #24262b;
+
+}
+
+
+input {
+
+    display: none;
+
+}
+
+
+#preview {
+
+    display: none;
+
+    width: 100%;
+
+    max-height: 350px;
+
+    object-fit: contain;
+
+    margin-top: 20px;
+
+    border-radius: 12px;
+
+}
+
+
+button {
+
+    width: 100%;
+
+    margin-top: 15px;
+
+    padding: 15px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background: white;
+
+    color: black;
+
+    font-size: 16px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+}
+
+
+button:disabled {
+
+    opacity: 0.4;
+
+    cursor: not-allowed;
+
+}
+
+
+#status {
+
+    margin-top: 15px;
+
+    color: #aaa;
+
+}
+
+
+#result {
+
+    display: none;
+
+    margin-top: 20px;
+
+    padding: 20px;
+
+    background: #0e0f12;
+
+    border-radius: 12px;
+
+}
+
+
+#linkBox {
+
+    width: 100%;
+
+    margin-top: 10px;
+
+    padding: 12px;
+
+    background: #191b20;
+
+    border: 1px solid #333;
+
+    border-radius: 8px;
+
+    color: #6ecbff;
+
+    word-break: break-all;
+
+    font-family: monospace;
+
+    line-height: 1.5;
+
+}
+
+
+#copyButton {
+
+    background: #4caf50;
+
+    color: white;
+
+}
+
+
+#openButton {
+
+    background: #333;
+
+    color: white;
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+<h1>
+🖼️ Bild → öffentlicher Link
+</h1>
+
+
+<p>
+Bild auswählen und einen öffentlichen Link
+erzeugen, den du anschließend in ChatGPT
+verwenden kannst.
+</p>
+
+
+<label class="drop">
+
+<strong>
+📁 Bild auswählen
+</strong>
+
+<br><br>
+
+Klicken oder Bild hierher ziehen
+
+<input
+    id="file"
+    type="file"
+    accept="image/*"
+>
+
+</label>
+
+
+<img
+    id="preview"
+    alt="Vorschau"
+>
+
+
+<button
+    id="uploadButton"
+    disabled
+>
+
+Bild hochladen
+
+</button>
+
+
+<div id="status"></div>
+
+
+<div id="result">
+
+<strong>
+✅ Dein Bild-Link:
+</strong>
+
+
+<div id="linkBox"></div>
+
+
+<button id="copyButton">
+
+📋 Link kopieren
+
+</button>
+
+
+<button id="openButton">
+
+🔗 Bild öffnen
+
+</button>
+
+
+</div>
+
+
+</div>
+
+
+<script>
+
+const fileInput =
+    document.getElementById("file");
+
+const preview =
+    document.getElementById("preview");
+
+const uploadButton =
+    document.getElementById("uploadButton");
+
+const status =
+    document.getElementById("status");
+
+const result =
+    document.getElementById("result");
+
+const linkBox =
+    document.getElementById("linkBox");
+
+const copyButton =
+    document.getElementById("copyButton");
+
+const openButton =
+    document.getElementById("openButton");
+
+
+let selectedFile = null;
+
+let imageLink = "";
+
+
+/*
+    Datei auswählen
+*/
+
+fileInput.addEventListener(
+    "change",
+    () => {
+
+        const file =
+            fileInput.files[0];
+
+        if (!file) {
+            return;
+        }
+
+
+        if (!file.type.startsWith("image/")) {
+
+            status.textContent =
+                "❌ Bitte ein Bild auswählen.";
+
+            return;
+        }
+
+
+        selectedFile = file;
+
+        uploadButton.disabled = false;
+
+        result.style.display =
+            "none";
+
+
+        preview.src =
+            URL.createObjectURL(file);
+
+        preview.style.display =
+            "block";
+
+
+        status.textContent =
+            "Ausgewählt: " +
+            file.name;
+    }
 );
 
-dropzone.addEventListener(
-  "dragleave",
-  () => {
 
-    dropzone.classList.remove(
-      "dragging"
-    );
-  }
-);
-
-dropzone.addEventListener(
-  "drop",
-  event => {
-
-    event.preventDefault();
-
-    dropzone.classList.remove(
-      "dragging"
-    );
-
-    const file =
-      event.dataTransfer.files[0];
-
-    selectFile(file);
-  }
-);
-
-
-/* Upload */
+/*
+    Upload
+*/
 
 uploadButton.addEventListener(
-  "click",
-  async () => {
+    "click",
+    async () => {
 
-    if (!selectedFile) return;
+        if (!selectedFile) {
+            return;
+        }
 
-    uploadButton.disabled = true;
 
-    status.textContent =
-      "Bild wird hochgeladen...";
+        uploadButton.disabled =
+            true;
 
-    const formData =
-      new FormData();
+        status.textContent =
+            "⏳ Bild wird hochgeladen...";
 
-    formData.append(
-      "image",
-      selectedFile
-    );
 
-    try {
+        const formData =
+            new FormData();
 
-      const response =
-        await fetch(
-          "/upload",
-          {
-            method: "POST",
-            body: formData
-          }
+
+        formData.append(
+            "image",
+            selectedFile
         );
 
-      const data =
-        await response.json();
 
-      if (!response.ok) {
-        throw new Error(
-          data.error ||
-          "Upload fehlgeschlagen."
-        );
-      }
+        try {
 
-      urlElement.textContent =
-        data.imageUrl;
+            const response =
+                await fetch(
+                    "/upload",
+                    {
+                        method: "POST",
+                        body: formData
+                    }
+                );
 
-      result.style.display =
-        "block";
 
-      status.textContent =
-        "Fertig!";
+            const data =
+                await response.json();
 
-    } catch (error) {
 
-      status.textContent =
-        "Fehler: " +
-        error.message;
+            if (!response.ok) {
 
-    } finally {
+                throw new Error(
+                    data.error ||
+                    "Upload fehlgeschlagen."
+                );
+            }
 
-      uploadButton.disabled = false;
+
+            imageLink =
+                data.link;
+
+
+            /*
+                LINK SICHTBAR MACHEN
+            */
+
+            linkBox.textContent =
+                imageLink;
+
+
+            result.style.display =
+                "block";
+
+
+            status.textContent =
+                "✅ Fertig!";
+
+
+        } catch (error) {
+
+            status.textContent =
+                "❌ " +
+                error.message;
+
+        } finally {
+
+            uploadButton.disabled =
+                false;
+        }
     }
-  }
 );
 
 
-/* Link kopieren */
+/*
+    Kopieren
+*/
 
 copyButton.addEventListener(
-  "click",
-  async () => {
+    "click",
+    async () => {
 
-    const url =
-      urlElement.textContent;
+        try {
 
-    await navigator.clipboard.writeText(
-      url
-    );
+            await navigator.clipboard.writeText(
+                imageLink
+            );
 
-    copyButton.textContent =
-      "✓ Kopiert!";
+            copyButton.textContent =
+                "✅ Link kopiert!";
 
-    setTimeout(() => {
 
-      copyButton.textContent =
-        "Link kopieren";
+            setTimeout(
+                () => {
 
-    }, 1500);
-  }
+                    copyButton.textContent =
+                        "📋 Link kopieren";
+
+                },
+                2000
+            );
+
+
+        } catch (error) {
+
+            /*
+                Fallback für Browser,
+                bei denen Clipboard API
+                nicht funktioniert.
+            */
+
+            const textarea =
+                document.createElement("textarea");
+
+            textarea.value =
+                imageLink;
+
+            document.body.appendChild(
+                textarea
+            );
+
+            textarea.select();
+
+            document.execCommand(
+                "copy"
+            );
+
+            textarea.remove();
+
+
+            copyButton.textContent =
+                "✅ Link kopiert!";
+
+        }
+    }
 );
+
+
+/*
+    Bild öffnen
+*/
+
+openButton.addEventListener(
+    "click",
+    () => {
+
+        if (imageLink) {
+
+            window.open(
+                imageLink,
+                "_blank"
+            );
+        }
+    }
+);
+
 </script>
 
+
 </body>
+
 </html>
