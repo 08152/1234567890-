@@ -1,77 +1,120 @@
 const express = require("express");
 const multer = require("multer");
 const path = require("path");
-const crypto = require("crypto");
 const fs = require("fs");
+const crypto = require("crypto");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const uploads = path.join(__dirname, "uploads");
+const uploadFolder = path.join(__dirname, "uploads");
 
-if (!fs.existsSync(uploads)) {
-    fs.mkdirSync(uploads);
+if (!fs.existsSync(uploadFolder)) {
+    fs.mkdirSync(uploadFolder, { recursive: true });
 }
 
 const storage = multer.diskStorage({
-    destination: uploads,
+    destination: (req, file, cb) => {
+        cb(null, uploadFolder);
+    },
 
     filename: (req, file, cb) => {
-        const ext = path.extname(file.originalname);
-        const name = crypto.randomBytes(16).toString("hex");
+        const extension = path.extname(file.originalname);
 
-        cb(null, name + ext);
+        const randomName =
+            crypto.randomBytes(20).toString("hex") +
+            extension;
+
+        cb(null, randomName);
     }
 });
 
 const upload = multer({
-    storage,
+    storage: storage,
 
     limits: {
         fileSize: 10 * 1024 * 1024
     },
 
     fileFilter: (req, file, cb) => {
+
         if (file.mimetype.startsWith("image/")) {
             cb(null, true);
         } else {
-            cb(new Error("Nur Bilder erlaubt."));
+            cb(new Error("Nur Bilder sind erlaubt."));
         }
     }
 });
 
-// index.html aus demselben Ordner
+
+/*
+    Startseite
+*/
+
 app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "index.html"));
+
+    res.sendFile(
+        path.join(__dirname, "index.html")
+    );
 });
 
-// Bilder öffentlich erreichbar machen
-app.use("/images", express.static(uploads));
 
-// Upload
-app.post("/upload", upload.single("image"), (req, res) => {
+/*
+    Bilder öffentlich machen
+*/
 
-    if (!req.file) {
-        return res.status(400).json({
-            error: "Kein Bild ausgewählt."
+app.use(
+    "/images",
+    express.static(uploadFolder)
+);
+
+
+/*
+    Upload
+*/
+
+app.post(
+    "/upload",
+    upload.single("image"),
+
+    (req, res) => {
+
+        if (!req.file) {
+
+            return res.status(400).json({
+                error: "Kein Bild ausgewählt."
+            });
+        }
+
+        const imageLink =
+            `${req.protocol}://${req.get("host")}/images/${req.file.filename}`;
+
+        res.json({
+            success: true,
+            link: imageLink
         });
     }
+);
 
-    const imageUrl =
-        `${req.protocol}://${req.get("host")}/images/${req.file.filename}`;
 
-    res.json({
-        success: true,
-        url: imageUrl
-    });
-});
+/*
+    Fehler
+*/
 
-app.use((err, req, res, next) => {
+app.use((error, req, res, next) => {
+
     res.status(400).json({
-        error: err.message
+        error:
+            error.message ||
+            "Upload fehlgeschlagen."
     });
 });
+
 
 app.listen(PORT, () => {
-    console.log(`Server läuft auf Port ${PORT}`);
+
+    console.log(
+        `Server läuft auf Port ${PORT}`
+    );
+
 });
